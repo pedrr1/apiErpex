@@ -10,7 +10,8 @@ require_once __DIR__ . '/../database/elastic-service.php';
 require_once __DIR__ . '/log.php';
 
 //Cuida do fluxo de todas as etapas da cração de usuario
-class createUserControl{
+class createUserControl
+{
 
    private CreateUserRequest $request;
    private CreateUserResponse $response;
@@ -20,7 +21,8 @@ class createUserControl{
    private CreateUserService $service;
    private array $env;
 
-   public function __construct(mysqli $db, Redis $redis, array $env){
+   public function __construct(mysqli $db, Redis $redis, array $env)
+   {
       $this->response = new CreateUserResponse();
       $this->email = new EmailService($env);
       $this->cache = new CreateUserCache($redis);
@@ -30,34 +32,35 @@ class createUserControl{
    }
 
 
-   public function createAcount():void{
+   public function createAcount(): void
+   {
 
-      try{
-      $this->request = new CreateUserRequest();
+      try {
+         $this->request = new CreateUserRequest();
          $traceId = bin2hex(random_bytes(16));
 
          $start = microtime(true);
-         $headers=$this->request->getHeaders();
-         $service=[
+         $headers = $this->request->getHeaders();
+         $service = [
             'name' => $headers['X-Client-App'],
-            'version' => $headers['X-version-app']?? null
+            'version' => $headers['X-version-app'] ?? null
          ];
 
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->request, 'getHeaders', $service, $duration, $traceId);
 
          $start = microtime(true);
-         $body=$this->request->getBody();
+         $body = $this->request->getBody();
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->request, 'getBody', $service, $duration, $traceId);
 
          $start = microtime(true);
-         $body=$this->request->authAllInfo($this->env);
+         $body = $this->request->authAllInfo($this->env);
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->request, 'authAllInfo', $service, $duration, $traceId);
 
          $start = microtime(true);
-         $this->service->insertAcount($body['NameUser'], $body['EmailUser'], $body['CpfUser'], $body['TelefoneUser']?? null, $body['googleUid']?? null, $body['Password']);
+         $this->service->insertAcount($body['NameUser'], $body['EmailUser'], $body['CpfUser'], $body['TelefoneUser'] ?? null, $body['googleUid'] ?? null, $body['Password']);
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->service, 'insertAcount', $service, $duration, $traceId);
 
@@ -65,46 +68,56 @@ class createUserControl{
          $this->response->createAcount();
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->response, 'createAcount', $service, $duration, $traceId);
-      }
-          catch (\Throwable $e){
-        $statusCode = 500;
+      } catch (\Throwable $e) {
+         $statusCode = 500;
 
-      if ($e instanceof ApiException && isset($e->statusCode)) {
-       $statusCode = $e->statusCode;
-      }
+         if ($e instanceof ApiException && isset($e->statusCode)) {
+            $statusCode = $e->statusCode;
+         }
 
-      $error = [
-               'type'       => get_class($e),
-               'message'    => $e->getMessage(),
-               'stacktrace' => $e->getTraceAsString(),
-            ];
+         $error = [
+            'type'       => get_class($e),
+            'message'    => $e->getMessage(),
+            'stacktrace' => $e->getTraceAsString(),
+         ];
 
-      $this->logError($service?? null, $e->getFile(), $statusCode, $traceId?? null, $error);
-            http_response_code($statusCode);
-             exit;
+         $this->logError($service ?? null, $e->getFile(), $statusCode, $traceId ?? null, $error);
+         http_response_code($statusCode);
+
+         header('Content-Type: application/json');
+
+         echo json_encode([
+            'success' => false,
+            'error' => [
+               'message' => $e->getMessage(),
+               'traceId' => $traceId ?? null
+            ]
+         ]);
+         exit;
       }
    }
 
 
-   public function gerarCodigo():void{
+   public function gerarCodigo(): void
+   {
 
-     try{
+      try {
 
          $this->request = new CreateUserRequest();
          $traceId = bin2hex(random_bytes(16));
 
          $start = microtime(true);
-         $headers=$this->request->getHeaders();
-         $service=[
+         $headers = $this->request->getHeaders();
+         $service = [
             'name' => $headers['X-Client-App'],
-            'version' => $headers['X-version-app']?? null
+            'version' => $headers['X-version-app'] ?? null
          ];
 
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->request, 'getHeaders', $service, $duration, $traceId);
 
          $start = microtime(true);
-         $body=$this->request->getBody();
+         $body = $this->request->getBody();
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->request, 'getBody', $service, $duration, $traceId);
 
@@ -122,48 +135,56 @@ class createUserControl{
          $this->response->addCode($body['EmailUser']);
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->response, 'addCode', $service, $duration, $traceId);
-     }
+      } catch (\Throwable $e) {
+         $statusCode = 500;
 
-     catch (\Throwable $e){
-        $statusCode = 500;
+         if ($e instanceof ApiException && isset($e->statusCode)) {
+            $statusCode = $e->statusCode;
+         }
 
-      if ($e instanceof ApiException && isset($e->statusCode)) {
-       $statusCode = $e->statusCode;
+         $error = [
+            'type'       => get_class($e),
+            'message'    => $e->getMessage(),
+            'stacktrace' => $e->getTraceAsString(),
+         ];
+
+         $this->logError($service ?? null, $e->getFile(), $statusCode, $traceId ?? null, $error);
+         http_response_code($statusCode);
+
+         header('Content-Type: application/json');
+
+         echo json_encode([
+            'success' => false,
+            'error' => [
+               'message' => $e->getMessage(),
+               'traceId' => $traceId ?? null
+            ]
+         ]);
+         exit;
       }
-
-      $error = [
-               'type'       => get_class($e),
-               'message'    => $e->getMessage(),
-               'stacktrace' => $e->getTraceAsString(),
-            ];
-
-      $this->logError($service?? null, $e->getFile(), $statusCode, $traceId?? null, $error);
-            http_response_code($statusCode);
-             exit;
-      }
-
    }
 
-   public function validarCodigo():void{
+   public function validarCodigo(): void
+   {
       try {
 
          $this->request = new CreateUserRequest();
          $traceId = bin2hex(random_bytes(16));
 
-                  $traceId = bin2hex(random_bytes(16));
+         $traceId = bin2hex(random_bytes(16));
 
          $start = microtime(true);
-         $headers=$this->request->getHeaders();
-         $service=[
+         $headers = $this->request->getHeaders();
+         $service = [
             'name' => $headers['X-Client-App'],
-            'version' => $headers['X-version-app']?? null
+            'version' => $headers['X-version-app'] ?? null
          ];
 
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->request, 'getHeaders', $service, $duration, $traceId);
 
          $start = microtime(true);
-         $body=$this->request->getBody();
+         $body = $this->request->getBody();
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->request, 'getBody', $service, $duration, $traceId);
 
@@ -181,54 +202,63 @@ class createUserControl{
          $this->response->insertCode($body['EmailUser']);
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->response, 'insertCode', $service, $duration, $traceId);
-
-      }
-      catch (\Throwable $e){
+      } catch (\Throwable $e) {
 
          $statusCode = 500;
 
-      if ($e instanceof ApiException && isset($e->statusCode)) {
-       $statusCode = $e->statusCode;
-      }
+         if ($e instanceof ApiException && isset($e->statusCode)) {
+            $statusCode = $e->statusCode;
+         }
 
-      $error = [
-               'type'       => get_class($e),
-               'message'    => $e->getMessage(),
-               'stacktrace' => $e->getTraceAsString(),
-            ];
+         $error = [
+            'type'       => get_class($e),
+            'message'    => $e->getMessage(),
+            'stacktrace' => $e->getTraceAsString(),
+         ];
 
-      $this->logError($service?? null, $e->getFile(), $statusCode, $traceId?? null, $error);
-      http_response_code($statusCode);
-      exit;
+         $this->logError($service ?? null, $e->getFile(), $statusCode, $traceId ?? null, $error);
+         http_response_code($statusCode);
+         header('Content-Type: application/json');
 
+         echo json_encode([
+            'success' => false,
+            'error' => [
+               'message' => $e->getMessage(),
+               'traceId' => $traceId ?? null
+            ]
+         ]);
+
+         exit;
       }
    }
 
-   private function logError(?array $service = null, string $path, ?int $code = null, $traceId, array $error):void{
+   private function logError(?array $service = null, string $path, ?int $code = null, $traceId, array $error): void
+   {
       $log = Log::logApp(
-            level: 'Error',
-            message: 'Erro no fluxo da requisição',
-            environment: $this->env['APP_ENV'],
-            service: $service??null,
-            http:[
-               'path' => $path,
-               'status_code' => $code
-            ],
-            client: [
-               'ip' => $_SERVER['REMOTE_ADDR'],
-               'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'desconhecido'
-            ],
-            trace: [
-            'id' => $traceId?? null
-            ],
-            error: $error
+         level: 'Error',
+         message: 'Erro no fluxo da requisição',
+         environment: $this->env['APP_ENV'],
+         service: $service ?? null,
+         http: [
+            'path' => $path,
+            'status_code' => $code
+         ],
+         client: [
+            'ip' => $_SERVER['REMOTE_ADDR'],
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'desconhecido'
+         ],
+         trace: [
+            'id' => $traceId ?? null
+         ],
+         error: $error
 
-         );
-         Elasticsearch::postDoc('erp-logs-app', $log);
+      );
+      Elasticsearch::postDoc('erp-logs-app', $log);
    }
 
 
-   private function logSucess(object $obj, string $metodo, ?array $service = null, int $duration, $traceId):void{
+   private function logSucess(object $obj, string $metodo, ?array $service = null, int $duration, $traceId): void
+   {
       $ref = new ReflectionMethod($obj, $metodo);
 
       $log = Log::logApp(
@@ -236,10 +266,10 @@ class createUserControl{
          environment: $this->env['APP_ENV'],
          service: $service ?? null,
          http: [
-           'method' => $ref->getDeclaringClass()->getName() . '::' . $ref->getName(),
-           'path' => $ref->getFileName(),
-           'status_code' => 200,
-           'response_time_ms' => $duration
+            'method' => $ref->getDeclaringClass()->getName() . '::' . $ref->getName(),
+            'path' => $ref->getFileName(),
+            'status_code' => 200,
+            'response_time_ms' => $duration
          ],
          client: [
             'ip' => $_SERVER['REMOTE_ADDR'],
@@ -252,7 +282,4 @@ class createUserControl{
 
       Elasticsearch::postDoc('erp-logs-app', $log);
    }
-
 }
-
-?>

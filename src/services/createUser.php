@@ -35,6 +35,7 @@ class CreateUserService
     ): void {
         $uidRequest = bin2hex(random_bytes(16));
         $this->authAllInfo($name, $email, $cpf, $telefone);
+        $this->repository->getAllInfos($name, $email, $cpf, $telefone, $uidRequest, $googleUid);
         $pathFoto = $this->repository->addFoto($uidRequest);
         $this->repository->insertAcount($name, $email, $cpf, $telefone, $uidRequest, $googleUid, $senhaHash, $pathFoto);
     }
@@ -62,17 +63,23 @@ class CreateUserService
     }
     private function authFoto(): void
     {
-        $info = getimagesize($_FILES['UserFoto']['tmp_name']);
-        if ($info === false) {
-            throw new ApiException("Arquivo não é uma imagem válida", 422);
-        }
+        if (
+            isset($_FILES['UserFoto']) &&
+            $_FILES['UserFoto']['error'] === UPLOAD_ERR_OK
+        ) {
 
-        // pega extensão
-        $extensao = strtolower(pathinfo($_FILES['UserFoto']['name'], PATHINFO_EXTENSION));
-        $permitidos = ['jpg', 'jpeg', 'png'];
+            $info = getimagesize($_FILES['UserFoto']['tmp_name']);
+            if ($info === false) {
+                throw new ApiException("Arquivo não é uma imagem válida", 422);
+            }
 
-        if (!in_array($extensao, $permitidos)) {
-            throw new ApiException("Extensão não permitida", 422);
+            // pega extensão
+            $extensao = strtolower(pathinfo($_FILES['UserFoto']['name'], PATHINFO_EXTENSION));
+            $permitidos = ['jpg', 'jpeg', 'png'];
+
+            if (!in_array($extensao, $permitidos)) {
+                throw new ApiException("Extensão não permitida", 422);
+            }
         }
     }
 
@@ -141,4 +148,3 @@ class CreateUserService
         }
     }
 }
-

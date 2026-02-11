@@ -14,9 +14,10 @@ class BaseRequest
         if (!empty($_FILES)) {
             $this->rawBody = $_POST;
 
-            // Anexa o arquivo no body
-            if (isset($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] === UPLOAD_ERR_OK) {
-                $this->rawBody['UserFoto'] = $_FILES['UserFoto'];
+            foreach ($_FILES as $key => $file) {
+                if ($file['error'] === UPLOAD_ERR_OK) {
+                    $this->rawBody[$key] = $file;
+                }
             }
 
             return;
@@ -69,4 +70,3 @@ class BaseRequest
         }
     }
 }
-?>

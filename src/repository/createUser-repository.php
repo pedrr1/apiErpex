@@ -17,7 +17,9 @@ class CreateUserRepository extends BaseRepository
         return $caminhoFinal;
     }
 
-    private function getAllInfos(
+
+
+    public function getAllInfos(
         string $name,
         string $email,
         string $cpf,
@@ -95,7 +97,7 @@ class CreateUserRepository extends BaseRepository
         string $senhaHash,
         ?string $pathFoto = null
     ): void {
-        $this->getAllInfos($name, $email, $cpf, $telefone, $uidRequest, $googleUid);
+       
         $sql = "
         INSERT INTO usuarios (
             role_id,
@@ -221,4 +223,3 @@ class CreateUserRepository extends BaseRepository
         $this->cache->delEmailCode($email);
     }
 }
-?>
