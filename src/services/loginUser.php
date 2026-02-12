@@ -10,5 +10,8 @@ class LoginUserService
         $this->repository = $repository;
     }
 
+    public function getUser(){
+        
+    }
 
 }
