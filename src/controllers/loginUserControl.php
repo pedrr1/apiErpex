@@ -18,7 +18,6 @@ class loginUserControl{
 
     public function __construct(mysqli $db, Redis $redis, array $env){
         $this->response = new LoginUserResponse();
-      $this->email = new EmailService($env);
       $this->cache = new LoginUserCache($redis);
       $this->repository = new LoginUserRepository($db, $this->cache);
       $this->service = new LoginUserService($this->repository);
