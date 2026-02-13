@@ -30,7 +30,7 @@ class loginUserControl{
         $body = $this->request->getBody();
         
         $this->request->authEmail($this->env);
-        $user=$this->service->getUser(($headers['NameUser']?? $headers['EmailUser']));
+        $user=$this->service->getUser(($body['NameUser']?? $body['EmailUser']));
         $this->response->loginResponse($user);
     }
 }
