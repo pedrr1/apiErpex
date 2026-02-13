@@ -4,11 +4,10 @@ require_once __DIR__ . '/../database/elastic-service.php';
 require_once __DIR__ . '/../controllers/log.php';
 abstract class BaseRepository {
     protected mysqli $db;
-    protected CreateUserCache $cache;
 
-    public function __construct(mysqli $db, CreateUserCache $cache) {
+
+    public function __construct(mysqli $db) {
         $this->db = $db;
-        $this->cache = $cache;
     }
 
     protected function logRepository(string $endpoint, string $metodo, int $duration, int $rows,

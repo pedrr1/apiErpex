@@ -2,6 +2,13 @@
 require_once __DIR__ . '/base-repository.php';
 class CreateUserRepository extends BaseRepository
 {
+    private CreateUserCache $cacheUser;
+     
+    public function __construct(mysqli $db, CreateUserCache $cache) {
+        parent::__construct($db);
+        $this->cacheUser = $cache;
+    }
+   
 
     public function addFoto(string $uidRequest): string
     {
@@ -14,7 +21,7 @@ class CreateUserRepository extends BaseRepository
             throw new ApiException("Falha ao salvar arquivo", 500);
         }
 
-        return $caminhoFinal;
+        return $nomeArquivo;
     }
 
 
@@ -165,6 +172,7 @@ class CreateUserRepository extends BaseRepository
                 'cpf' => $cpf,
                 'telefone' => $telefone,
                 'uuid_request' => $uidRequest,
+                'foto_perfil' => $pathFoto,
                 'google_uid' => $googleUid,
                 'role_id' => $roleId,
                 'status_id' => $statusId
@@ -207,12 +215,12 @@ class CreateUserRepository extends BaseRepository
     {
         //esse codigo  do redis deixa em outra funçao de ver
         $this->getEmailRepository($email);
-        $this->cache->setEmailCode($email, $code);
+        $this->cacheUser->setEmailCode($email, $code);
     }
 
     public function insertCodeEmail(string $email, string $code): void
     {
-        $savedCode = $this->cache->compareEmailCode($email);
+        $savedCode = $this->cacheUser->compareEmailCode($email);
 
         if (!hash_equals($savedCode, $code)) {
             throw new ApiException(
@@ -220,6 +228,6 @@ class CreateUserRepository extends BaseRepository
                 422
             ); // código inválido
         }
-        $this->cache->delEmailCode($email);
+        $this->cacheUser->delEmailCode($email);
     }
 }
