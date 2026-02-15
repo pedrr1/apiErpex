@@ -171,8 +171,6 @@ class createUserControl
          $this->request = new CreateUserRequest();
          $traceId = bin2hex(random_bytes(16));
 
-         $traceId = bin2hex(random_bytes(16));
-
          $start = microtime(true);
          $headers = $this->request->getHeaders();
          $service = [

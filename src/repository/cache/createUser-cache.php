@@ -4,7 +4,7 @@ class CreateUserCache extends BaseCache{
 
 
         public function setEmailCode(string $email, string $code):void{
-        $redisKey = 'verify:email:' . strtolower($email);
+        $redisKey = 'verify:email:cad:' . strtolower($email);
         $start = microtime(true);
             $created = $this->redis->set(
             $redisKey,
@@ -25,7 +25,7 @@ class CreateUserCache extends BaseCache{
     }
 
     public function compareEmailCode(string $email):string{
-        $redisKey = 'verify:email:' . strtolower($email);
+        $redisKey = 'verify:email:cad:' . strtolower($email);
         $start = microtime(true);
         $savedCode = $this->redis->get($redisKey);
         $duration = (int)((microtime(true) - $start) * 1000);
@@ -42,7 +42,7 @@ class CreateUserCache extends BaseCache{
     }
 
     public function delEmailCode(string $email):void{
-        $redisKey = 'verify:email:' . strtolower($email);
+        $redisKey = 'verify:email:cad:' . strtolower($email);
         $start = microtime(true);
         $this->redis->del($redisKey);
         $duration = (int)((microtime(true) - $start) * 1000);

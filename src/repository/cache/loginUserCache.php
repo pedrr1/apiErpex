@@ -21,7 +21,7 @@ class loginUserCache extends BaseCache
         return null;
     }
 
-    function cachearUsuario( array $user): void
+    public function cachearUsuario( array $user): void
     {
 
         if (!empty($user['email'])) {
@@ -32,6 +32,27 @@ class loginUserCache extends BaseCache
         if (!empty($user['nome'])) {
             $keyNome = "user:nome:" . strtolower(trim($user['nome']));
             $this->redis->setex($keyNome, 600, json_encode($user));
+        }
+    }
+
+    public function setCodeEmail (string $code, string $email): void{
+         $redisKey = 'verify:email:recover:' . strtolower($email);
+        $start = microtime(true);
+            $created = $this->redis->set(
+            $redisKey,
+            $code,
+            ['nx', 'ex' => 300]
+        );
+        $duration = (int)((microtime(true) - $start) * 1000);
+
+        $this->logCache(__DIR__, __METHOD__, $duration);
+
+
+        if ($created === false) {
+            throw new ApiException(
+                'Código já enviado.',
+                429
+            );
         }
     }
 }
