@@ -110,7 +110,7 @@ class createUserControl
          $headers = $this->request->getHeaders();
          $service = [
             'name' => $headers['X-Client-App'],
-            'version' => $headers['X-version-app'] ?? null
+            'version' => $headers['X-Version-App'] ?? null
          ];
 
          $duration = (int)((microtime(true) - $start) * 1000);
@@ -164,7 +164,7 @@ class createUserControl
       }
    }
 
-   public function validarCodigo(): void
+   public function authCode(): void
    {
       try {
 

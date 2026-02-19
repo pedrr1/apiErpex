@@ -13,7 +13,7 @@ class CreateUserResponse extends BaseResponse {
 
      public function insertCode(string $email): void {
         $this->data = [
-            'Message' => 'Codigo Validado',
+            'Message' => 'Codigo Validado com exito',
             'Email' => $email
         ];
         $this->send();
