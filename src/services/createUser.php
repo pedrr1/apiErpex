@@ -16,9 +16,8 @@ class CreateUserService
     {
         $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
         // regra de negócio
-        $this->authEmail($email);
         $this->repository->verifyEmailCode($email, $code);
-        $this->mail->enviarCodigo($email, $code);
+        $this->mail->sendCode($email, $code, 'codigo_cadastro');
     }
 
     public function insertCode(string $email, string $code)
@@ -56,7 +55,7 @@ class CreateUserService
             );
         }
 
-        $this->authEmail($email);
+
         $this->authCpf($cpf);
         $this->authCelular($telefone);
         $this->authFoto();
@@ -137,14 +136,4 @@ class CreateUserService
         }
     }
 
-
-    private function authEmail($email): void
-    {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new ApiException("Email inválido", 400);
-        }
-        if (!preg_match('/@gmail\.com$/', $email)) {
-            throw new ApiException("Somente emails Gmail são aceitos", 400);
-        }
-    }
 }

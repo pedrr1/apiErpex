@@ -215,7 +215,7 @@ class CreateUserRepository extends BaseRepository
     {
         //esse codigo  do redis deixa em outra funçao de ver
         $this->getEmailRepository($email);
-        $this->cacheUser->setEmailCode($email, $code);
+        $this->cacheUser->getSetEmailCode($email, $code);
     }
 
     public function insertCodeEmail(string $email, string $code): void

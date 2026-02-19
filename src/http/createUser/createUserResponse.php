@@ -5,7 +5,7 @@ class CreateUserResponse extends BaseResponse {
 
     public function addCode(string $email): void {
         $this->data = [
-            'Message' => 'Codigo Enviado',
+            'Message' => 'Codigo Enviado com exito',
             'Email' => $email
         ];
         $this->send();

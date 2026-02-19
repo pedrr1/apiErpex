@@ -30,14 +30,14 @@ class EmailService
         $this->mail->CharSet = 'UTF-8';
     }
 
-    public function enviarCodigo(string $email, string $codigo): void
+    public function sendCode(string $email, string $codigo, string $html): void
     {
         try{
             $this->mail->clearAddresses();
             $this->mail->addAddress($email);
 
             $this->mail->Subject = 'Código de Verificação Seye-ERP';
-            $this->mail->Body    = $this->carregarTemplate($codigo);
+            $this->mail->Body    = $this->carregarTemplate($codigo, $html);
 
             $this->mail->send();
         }
@@ -46,9 +46,9 @@ class EmailService
         }    
     }
 
-    private function carregarTemplate(string $codigo): string
+    private function carregarTemplate(string $codigo, string $html): string
     {
-        $caminho = __DIR__ . '/codigo_email.html';
+        $caminho = __DIR__ . '/' . $html. '.html';
 
         if (!file_exists($caminho)) {
             throw new Exception('Template de e-mail não encontrado');

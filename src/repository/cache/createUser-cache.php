@@ -3,7 +3,7 @@ require_once __DIR__ . '/base-cache.php';
 class CreateUserCache extends BaseCache{
 
 
-        public function setEmailCode(string $email, string $code):void{
+        public function getSetEmailCode(string $email, string $code):void{
         $redisKey = 'verify:email:cad:' . strtolower($email);
         $start = microtime(true);
             $created = $this->redis->set(

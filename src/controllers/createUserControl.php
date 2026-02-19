@@ -98,7 +98,7 @@ class createUserControl
    }
 
 
-   public function gerarCodigo(): void
+   public function generateCode(): void
    {
 
       try {
