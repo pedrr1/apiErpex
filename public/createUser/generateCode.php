@@ -5,5 +5,5 @@ require_once __DIR__ . '/../../src/security/env.php';
 require_once __DIR__ . '/../../src/controllers/createUserControl.php';
 
 $create = new createUserControl($conn, $redis, $env);
-$create->gerarCodigo();
+$create->generateCode();
 ?>
