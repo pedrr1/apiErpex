@@ -3,13 +3,7 @@ require_once __DIR__ . '/../request-base.php';
 
 class CreateUserRequest extends BaseRequest
 {
-    private function authFoto(): void
-    {
 
-        if (!isset($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] !== UPLOAD_ERR_OK) {
-            throw new ApiException("Erro ao fazer upload", 500);
-        }
-    }
 
     public function authEmail(array $env): void
     {
@@ -38,7 +32,6 @@ class CreateUserRequest extends BaseRequest
     {
         $this->authHandleToken($env);
         $this->authHandleApplication();
-        $this->authFoto();
 
         $requiredFields = [
             'EmailUser' => 'Email inválido',
