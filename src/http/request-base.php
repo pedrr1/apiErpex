@@ -7,35 +7,42 @@ class BaseRequest
     protected array $rawBody;
 
     public function __construct()
-    {
-        $this->headers = getallheaders() ?: [];
+{
+    $this->headers = getallheaders() ?: [];
 
-        // Se tiver upload (multipart/form-data)
-        if (!empty($_FILES) && isset($_POST['UrlFotoUser'])) {
-            $this->rawBody = $_POST;
+    // Multipart/form-data (com ou sem arquivo)
+    if (
+        isset($_SERVER['CONTENT_TYPE']) &&
+        str_contains($_SERVER['CONTENT_TYPE'], 'multipart/form-data')
+    ) {
+        $this->rawBody = $_POST;
 
-            foreach ($_FILES as $key => $file) {
-                if ($file['error'] === UPLOAD_ERR_OK) {
-                    $this->rawBody[$key] = $file;
-                }
+        foreach ($_FILES as $key => $file) {
+            if ($file['error'] === UPLOAD_ERR_OK) {
+                $this->rawBody[$key] = $file;
             }
-
-            return;
         }
 
-        // JSON normal
-        $raw = file_get_contents("php://input");
-
-        if ($raw === '' || $raw === false) {
-            throw new ApiException("Body vazio", 400);
+        if (empty($this->rawBody)) {
+            throw new ApiException("Body multipart vazio", 400);
         }
 
-        $this->rawBody = json_decode($raw, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE || !is_array($this->rawBody)) {
-            throw new ApiException("JSON inválido", 400);
-        }
+        return;
     }
+
+    // JSON normal
+    $raw = file_get_contents("php://input");
+
+    if ($raw === '' || $raw === false) {
+        throw new ApiException("Body vazio", 400);
+    }
+
+    $this->rawBody = json_decode($raw, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE || !is_array($this->rawBody)) {
+        throw new ApiException("JSON inválido", 400);
+    }
+}
 
     public function getHeaders(): array
     {
