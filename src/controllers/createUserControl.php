@@ -60,7 +60,7 @@ class createUserControl
          $this->logSucess($this->request, 'authAllInfo', $service, $duration, $traceId);
 
          $start = microtime(true);
-         $this->service->insertAcount($body['NameUser'], $body['EmailUser'], $body['CpfUser'], $body['TelefoneUser'] ?? null, $body['googleUid'] ?? null, $body['Password']);
+         $this->service->insertAcount($body['NameUser'], $body['EmailUser'], $body['CpfUser'], $body['TelefoneUser'] ?? null, $body['GoogleUid'] ?? null, $body['Password']);
          $duration = (int)((microtime(true) - $start) * 1000);
          $this->logSucess($this->service, 'insertAcount', $service, $duration, $traceId);
 

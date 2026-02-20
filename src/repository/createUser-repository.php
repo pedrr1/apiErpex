@@ -12,6 +12,7 @@ class CreateUserRepository extends BaseRepository
 
     public function addFoto(string $uidRequest): string
     {
+        if (isset ($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] === UPLOAD_ERR_OK) {
         $extensao = strtolower(pathinfo($_FILES['UserFoto']['name'], PATHINFO_EXTENSION));
         $nomeArquivo = 'user' . $uidRequest . '.' . $extensao;
         $pasta = __DIR__ . '/fotos/user/';
@@ -20,7 +21,22 @@ class CreateUserRepository extends BaseRepository
         if (!move_uploaded_file($_FILES['UserFoto']['tmp_name'], $caminhoFinal)) {
             throw new ApiException("Falha ao salvar arquivo", 500);
         }
-
+    }
+     else if(isset ($_POST['UrlFotoUser'])){
+            $url = $_POST['UrlFotoUser'];
+            $conteudo = file_get_contents($url);
+            if ($conteudo === false)        
+            { 
+                throw new ApiException("Não foi possível baixar a foto", 400); 
+            }
+            $nomeArquivo = 'user' . $uidRequest . '.' . 'jpg';
+            $pasta = __DIR__ . '/fotos/user/';
+            $caminhoFinal = $pasta . $nomeArquivo;
+            
+            if (file_put_contents($caminhoFinal, $conteudo) === false){
+                throw new ApiException("Falha ao salvar arquivo", 500);
+            }
+        }
         return $nomeArquivo;
     }
 
