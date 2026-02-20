@@ -6,7 +6,7 @@ class CreateUserRequest extends BaseRequest
     private function authFoto(): void
     {
 
-        if ($_FILES['UserFoto']['error'] !== UPLOAD_ERR_OK) {
+        if (!isset($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] !== UPLOAD_ERR_OK) {
             throw new ApiException("Erro ao fazer upload", 500);
         }
     }
