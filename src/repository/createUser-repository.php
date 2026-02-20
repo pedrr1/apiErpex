@@ -10,7 +10,7 @@ class CreateUserRepository extends BaseRepository
     }
    
 
-    public function addFoto(string $uidRequest): string
+    public function addFoto(string $uidRequest): ?string
     {
         if (isset ($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] === UPLOAD_ERR_OK) {
         $extensao = strtolower(pathinfo($_FILES['UserFoto']['name'], PATHINFO_EXTENSION));
@@ -37,7 +37,7 @@ class CreateUserRepository extends BaseRepository
                 throw new ApiException("Falha ao salvar arquivo", 500);
             }
         }
-        return $nomeArquivo;
+        return $nomeArquivo ?? null;
     }
 
 
