@@ -11,7 +11,7 @@ class BaseRequest
         $this->headers = getallheaders() ?: [];
 
         // Se tiver upload (multipart/form-data)
-        if (!empty($_FILES)) {
+        if (!empty($_FILES) && isset($_POST['UrlFotoUser'])) {
             $this->rawBody = $_POST;
 
             foreach ($_FILES as $key => $file) {
