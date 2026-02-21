@@ -19,7 +19,7 @@ class LoginUserService
            throw new ApiException("Senha invalida", 401);
        }
 
-       if (empty($user['foto_perfil'])){
+       if (!empty($user['foto_perfil'])){
        $user['foto_perfil'] = 'https://api.sophia-me13.site/src/repository/fotos/user/'.$user['foto_perfil'];
        }
        return $user;
