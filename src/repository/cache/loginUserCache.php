@@ -9,6 +9,7 @@ class loginUserCache extends BaseCache
 
         $keyEmail = "user:email:$login";
         $keyNome  = "user:nome:$login";
+        $keyidGoogle = "user:idGoogle:$login";
 
         if ($this->redis->exists($keyEmail)) {
             return json_decode($this->redis->get($keyEmail), true);
@@ -16,6 +17,10 @@ class loginUserCache extends BaseCache
 
         if ($this->redis->exists($keyNome)) {
             return json_decode($this->redis->get($keyNome), true);
+        }
+
+        if ($this->redis->exists($keyidGoogle)) {
+            return json_decode($this->redis->get($keyidGoogle), true);
         }
 
         return null;
@@ -32,6 +37,10 @@ class loginUserCache extends BaseCache
         if (!empty($user['nome'])) {
             $keyNome = "user:nome:" . strtolower(trim($user['nome']));
             $this->redis->setex($keyNome, 600, json_encode($user));
+        }
+        if (!empty($user['google_uid'])) {
+            $keyidGoogle = "user:idGoogle:" . strtolower(trim($user['google_uid']));
+            $this->redis->setex($keyidGoogle, 600, json_encode($user));
         }
     }
 

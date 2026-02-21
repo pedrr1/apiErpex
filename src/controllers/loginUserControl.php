@@ -42,7 +42,7 @@ class loginUserControl
             $headers = $this->request->getHeaders();
             $service = [
                 'name' => $headers['X-Client-App'],
-                'version' => $headers['X-version-app'] ?? null
+                'version' => $headers['X-Version-App'] ?? null
             ];
 
             $duration = (int)((microtime(true) - $start) * 1000);
@@ -59,7 +59,7 @@ class loginUserControl
             $this->logSucess($this->request, 'authLogin', $service, $duration, $traceId);
 
             $start = microtime(true);
-            $user = $this->service->getUser(($body['NameUser'] ?? $body['EmailUser']));
+            $user = $this->service->getUser($body['NameUser'] ?? $body['EmailUser'] ?? $body['GoogleUid'] ?? '', $body['Password'] ?? null);
             $duration = (int)((microtime(true) - $start) * 1000);
             $this->logSucess($this->service, 'getUser', $service, $duration, $traceId);
 

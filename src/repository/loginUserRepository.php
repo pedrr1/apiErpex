@@ -16,11 +16,11 @@ class LoginUserRepository extends BaseRepository
         $stmt = $this->db->prepare("
         SELECT nome, email, senha_hash, cpf, telefone, foto_perfil, uuid_request
         FROM usuarios
-        WHERE email = ? OR nome = ?
+        WHERE (email = ? OR nome = ? OR google_uid = ?) AND status_id != 3
         LIMIT 1
         ");
 
-        $stmt->bind_param("ss", $login, $login);
+        $stmt->bind_param("sss", $login, $login, $login);
         $stmt->execute();
 
         $result = $stmt->get_result();
@@ -31,12 +31,14 @@ class LoginUserRepository extends BaseRepository
 
     public function getUser(string $login):array{
         $user = $this->cache->loginCacheName($login);
+        
         if (empty($user)){
             $user = $this->loginUserSQL($login);
             $this->cache->cachearUsuario($user);
 
             return $user;
         }
+        
         return $user;   
        }
     

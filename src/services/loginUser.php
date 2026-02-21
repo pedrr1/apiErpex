@@ -12,9 +12,13 @@ class LoginUserService
         $this->email = $email;
     }
 
-    public function getUser(string $login){
+    public function getUser(string $login, ?string $password): array{
        $user = $this->repository->getUser($login);
        
+       if (isset($password) && $user['senha_hash'] !== $password) {
+           throw new ApiException("Senha invalida", 401);
+       }
+
        if (empty($user['foto_perfil'])){
        $user['foto_perfil'] = 'https://api.sophia-me13.site/src/repository/fotos/user/'.$user['foto_perfil'];
        }
