@@ -50,6 +50,8 @@ class UserRepository extends BaseRepository
         $this->setDevices($idDevice, $deviceIP, $adress, $userAgent);
     }
 
+
+
     public function checkDevicesUser (string $idUser, string $idDevice): array
     {
          $stmt = $this->db->prepare("SELECT 
@@ -202,8 +204,11 @@ class UserRepository extends BaseRepository
     }
 
 
-    public function checkDevices(string $idUser): void
+    public function checkDevices(string $idRequest): void
     {
+        $user = $this->getInfos($idRequest);
+        $idUser = $user['id'] ?? null;
+        
         $stmt = $this->db->prepare("SELECT 
                     CASE 
                         WHEN a.id IS NOT NULL

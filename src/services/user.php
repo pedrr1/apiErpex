@@ -19,10 +19,6 @@ class UserService
         return $this->repository->getInfos($idRequest);
     }
 
-    public function checkDevices(string $idRequest): void
-    {
-        $this->repository->checkDevicesAndSetCache($idRequest);
-    }
 
     public function generatePix(int $plano, array $env): array
     {
@@ -103,6 +99,11 @@ class UserService
     {
         $this->repository->checkDevicesAndUpdate($idRequest, $idDevice);
         
+    }
+
+    public function checkAddDevices(string $idRequest): void
+    {
+        $this->repository->checkDevices($idRequest);
     }
 
     public function addSignature(string $idRequest, string $idPix, array $env): void
