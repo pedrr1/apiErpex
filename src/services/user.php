@@ -99,6 +99,12 @@ class UserService
 
     }
 
+    public function checkDevicesUser(string $idRequest, string $idDevice): void
+    {
+        $this->repository->checkDevicesAndUpdate($idRequest, $idDevice);
+        
+    }
+
     public function addSignature(string $idRequest, string $idPix, array $env): void
     {
         $pixResult = $this->pix->checkPix($idPix, $env);

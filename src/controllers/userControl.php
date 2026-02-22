@@ -226,7 +226,7 @@ class UserControl
         }
     }
 
-    public function addDeviceUser(): void
+    public function checkDeviceUser(): void
     {
         try {
             $this->request = new UserRequest();
@@ -258,14 +258,16 @@ class UserControl
             $this->logSucess($this->request, 'authDevice', $service, $duration, $traceId);
 
             $start = microtime(true);
-            $this->service->addDeviceUser($body['IdRequest'], $body['DeviceInfo']);
+            $this->service->checkDevicesUser($body['IdRequest'], $body['DeviceInfo']);
             $duration = (int)((microtime(true) - $start) * 1000);
-            $this->logSucess($this->service, 'addDeviceUser', $service, $duration, $traceId);
+            $this->logSucess($this->service, 'checkDevicesUser', $service, $duration, $traceId);
 
-
-            http_response_code(200);
-            header('Content-Type: application/json');
-            echo json_encode(['success' => true]);
+            $start = microtime(true);
+            $this->response->userResponse(['message' => 'Dispositivo autorizado para este usuário']);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->response, 'userResponse', $service, $duration, $traceId);
+            
+            
         } catch (\Throwable $e) {
             $statusCode = 500;
 
