@@ -11,15 +11,22 @@ class loginUserCache extends BaseCache
         $keyNome  = "user:nome:$login";
         $keyidGoogle = "user:idGoogle:$login";
 
+        $start = microtime(true);
         if ($this->redis->exists($keyEmail)) {
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logCache(__DIR__, __METHOD__, $duration);
             return json_decode($this->redis->get($keyEmail), true);
         }
 
         if ($this->redis->exists($keyNome)) {
+           $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logCache(__DIR__, __METHOD__, $duration);
             return json_decode($this->redis->get($keyNome), true);
         }
 
         if ($this->redis->exists($keyidGoogle)) {
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logCache(__DIR__, __METHOD__, $duration);
             return json_decode($this->redis->get($keyidGoogle), true);
         }
 
