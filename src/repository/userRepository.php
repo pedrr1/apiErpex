@@ -53,7 +53,7 @@ class UserRepository extends BaseRepository
     public function setDevices(string $idDevice, string $deviceIP, string $adress, string $userAgent): void
     {
         $stmt = $this->db->prepare("INSERT INTO dispositivos (device_uuid, ip, endereco_proprio, user_agent) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("sss", $idDevice, $deviceIP, $adress, $userAgent);
+        $stmt->bind_param("ssss", $idDevice, $deviceIP, $adress, $userAgent);
         $start = microtime(true);
         $stmt->execute();
         $duration = microtime(true) - $start;
