@@ -68,7 +68,7 @@ class UserService
 
     function getDeviceType() {
 
-    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
     if (preg_match('/windows/i', $userAgent)) {
         return "Windows";
