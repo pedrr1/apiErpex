@@ -6,7 +6,7 @@ require_once __DIR__ . '/../repository/userRepository.php';
 require_once __DIR__ . '/../repository/cache/userCache.php';
 require_once __DIR__ . '/../http/user/userResponse.php';
 require_once __DIR__ . '/../http/user/userRequest.php';
-require_once __DIR__ . '/../services/userService.php';
+require_once __DIR__ . '/../services/user.php';
 require_once __DIR__ . '/email/send-email.php';
 require_once __DIR__ . '/pix/generate_pix.php';
 
