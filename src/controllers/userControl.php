@@ -475,7 +475,31 @@ class UserControl
             $this->logSucess($this->response, 'userResponse', $service, $duration, $traceId);
 
         } catch (\Throwable $e) {
-            // Tratamento de erros semelhante aos outros métodos
+            $statusCode = 500;
+
+            if ($e instanceof ApiException && isset($e->statusCode)) {
+                $statusCode = $e->statusCode;
+            }
+
+            $error = [
+                'type'       => get_class($e),
+                'message'    => $e->getMessage(),
+                'stacktrace' => $e->getTraceAsString(),
+            ];
+
+            $this->logError($service ?? null, $e->getFile(), $statusCode, $traceId ?? null, $error);
+            http_response_code($statusCode);
+
+            header('Content-Type: application/json');
+
+            echo json_encode([
+                'success' => false,
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'traceId' => $traceId ?? null
+                ]
+            ]);
+            exit;
         }
     }
 
