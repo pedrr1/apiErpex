@@ -70,7 +70,7 @@ class UserRepository extends BaseRepository
             WHERE du.usuario_id = ?
             AND du.dispositivo_id = ? AND du.status_dispositivo_id = 1;");
 
-        $stmt->bind_param("ii", $idUser, $deviceId);
+        $stmt->bind_param("ii", $idUser, $idDevice);
         $start = microtime(true);
         $stmt->execute();
         $duration = microtime(true) - $start;
