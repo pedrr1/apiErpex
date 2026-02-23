@@ -125,7 +125,9 @@ class UserService
                 $this->repository->addPlan($idRequest, 2);
                 return;
             }
-        } elseif ($pixResult['status'] === 'pending' || $pixResult['status'] === 'rejected') {
+        } 
+        
+        if ($pixResult['status'] === 'pending' || $pixResult['status'] === 'rejected') {
             throw new ApiException("Pagamento não aprovado", 400);
         }
 
