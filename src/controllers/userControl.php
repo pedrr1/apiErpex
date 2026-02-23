@@ -361,6 +361,77 @@ class UserControl
         }
     }
 
+    public function addDevicesUser(): void
+    {
+        try {
+            $this->request = new UserRequest();
+            $traceId = bin2hex(random_bytes(16));
+
+            $start = microtime(true);
+            $headers = $this->request->getHeaders();
+            $service = [
+                'name' => $headers['X-Client-App'],
+                'version' => $headers['X-Version-App'] ?? null
+            ];
+
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'getHeaders', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $body = $this->request->getBody();
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'getBody', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->request->authUser($this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'authUser', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->request->authDevice($this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'authDevice', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->service->addDevicesUser($body['IdRequest'], $body['IdDevice'], $body['Name']);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->service, 'addDevicesUser', $service, $duration, $traceId);
+
+                $start = microtime(true);
+            $this->response->userResponse(['message' => 'Dispositivo adicionado ao usuário com sucesso']);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->response, 'userResponse', $service, $duration, $traceId);
+
+            // Resposta de sucesso
+        } catch (\Throwable $e) {
+            $statusCode = 500;
+
+            if ($e instanceof ApiException && isset($e->statusCode)) {
+                $statusCode = $e->statusCode;
+            }
+
+            $error = [
+                'type'       => get_class($e),
+                'message'    => $e->getMessage(),
+                'stacktrace' => $e->getTraceAsString(),
+            ];
+
+            $this->logError($service ?? null, $e->getFile(), $statusCode, $traceId ?? null, $error);
+            http_response_code($statusCode);
+
+            header('Content-Type: application/json');
+
+            echo json_encode([
+                'success' => false,
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'traceId' => $traceId ?? null
+                ]
+            ]);
+            exit;
+        }
+    }
+
     private function addSignature(): void
     {
         try {

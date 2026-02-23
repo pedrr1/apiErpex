@@ -140,6 +140,43 @@ class UserRepository extends BaseRepository
         return null;
     }
 
+    public function setDevicesUser(string $idRequest, string $idDevices, string $nomeDispositivo): void{
+        
+        $user = $this->getInfos($idRequest);
+        $idUser = $user['id'] ?? null;
+        $device = $this->getDevice($idDevices);
+        $idDevice = $device['id'] ?? null;
+        
+        $stmt = $this->db->prepare("INSERT INTO dispositivos_usuarios (usuario_id, dispositivo_id, nome, status_dispositivo_id, primeiro_acesso) VALUES (?, ?, ?, 1, NOW())");
+        $stmt->bind_param("iis", $idUser, $idDevice, $nomeDispositivo);
+        $start = microtime(true);
+        $stmt->execute();
+        $duration = microtime(true) - $start;
+
+        $this->logRepository(
+            endpoint: __DIR__,
+            metodo: __METHOD__,
+            duration: $duration,
+            rows: $stmt->affected_rows,
+            action: 'INSERT',
+            entidade: 'dispositivos_usuarios',
+            entidadeId: (int)$stmt->insert_id ?: null,
+                before: null,
+                after: [
+                    'usuario_id' => $idUser,
+                    'dispositivo_id' => $idDevice,
+                    'nome' => $nomeDispositivo,
+                    'status_dispositivo_id' => 1,
+                    'primeiro_acesso' => date('Y-m-d H:i:s')
+                ]
+        );
+
+        
+        if ($stmt->affected_rows === 0) {
+            throw new ApiException("Falha ao associar dispositivo ao usuário", 500);
+        }
+    }
+
     public function checkDevicesAndUpdate(string $idRequest, string $idDevice): void
     {
         $user = $this->getInfos($idRequest);
