@@ -259,7 +259,7 @@ class UserControl
             $this->logSucess($this->request, 'authDevice', $service, $duration, $traceId);
 
             $start = microtime(true);
-            $this->service->checkDevicesUser($body['IdRequest'], $body['DeviceInfo']);
+            $this->service->checkDevicesUser($body['IdRequest'], $body['IdDevice']);
             $duration = (int)((microtime(true) - $start) * 1000);
             $this->logSucess($this->service, 'checkDevicesUser', $service, $duration, $traceId);
 
