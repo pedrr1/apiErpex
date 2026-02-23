@@ -52,7 +52,7 @@ class UserRepository extends BaseRepository
 
 
 
-    public function checkDevicesUser (string $idUser, string $idDevice): array
+    public function checkDevicesUser (string $idUser, string $idDevice): ?array
     {
          $stmt = $this->db->prepare("SELECT 
             d.id,
