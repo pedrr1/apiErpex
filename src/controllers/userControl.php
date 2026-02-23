@@ -131,7 +131,7 @@ class UserControl
             $this->response->userResponse($pixData);
             $duration = (int)((microtime(true) - $start) * 1000);
             $this->logSucess($this->response, 'userResponse', $service, $duration, $traceId);
-            
+
         } catch (\Throwable $e) {
             $statusCode = 500;
 
@@ -433,7 +433,7 @@ class UserControl
         }
     }
 
-    private function addSignature(): void
+    public function addSignature(): void
     {
         try {
             $this->request = new UserRequest();
@@ -459,8 +459,21 @@ class UserControl
             $duration = (int)((microtime(true) - $start) * 1000);
             $this->logSucess($this->request, 'authPix', $service, $duration, $traceId);
 
-                $start = microtime(true);
-                $this->service->addSignature($body['PixId']);
+            $start = microtime(true);
+            $this->request->authUser($this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'authUser', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->service->addSignature($body['IdRequest'], $body['PixId'], $this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->service, 'addSignature', $service, $duration, $traceId);
+
+                $start = microtime(true);            
+            $this->response->userResponse(['message' => 'Assinatura adicionada com sucesso']);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->response, 'userResponse', $service, $duration, $traceId);
+
         } catch (\Throwable $e) {
             // Tratamento de erros semelhante aos outros métodos
         }
