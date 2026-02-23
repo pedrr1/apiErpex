@@ -58,7 +58,7 @@ class PixController
         return json_decode($response, true);
     }
 
-    public function checkPix(int $id, array $env): array
+    public function checkPix(string $id, array $env): array
     {
         $url = $this->url . "/" . $id;
 

@@ -294,7 +294,7 @@ class UserRepository extends BaseRepository
 
 
     
-    public function addPlan(int $idRequest, int $idPlano): void
+    public function addPlan(string $idRequest, int $idPlano): void
     {
         $user = $this->getInfos($idRequest);
         $idUser = $user['id'];
