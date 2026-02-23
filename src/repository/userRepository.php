@@ -62,7 +62,7 @@ class UserRepository extends BaseRepository
 
             du.nome AS nome_usuario_dispositivo,  -- nome que o usuário deu pro device
             du.primeiro_acesso,
-            du.ultimo_acesso,
+            du.ultimo_acesso
 
             FROM dispositivos d
                 JOIN dispositivos_usuarios du 
