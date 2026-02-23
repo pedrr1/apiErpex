@@ -42,7 +42,7 @@ class UserRequest extends BaseRequest
         $this->authHandleApplication();
         $plano = $this->rawBody['Plano'] ?? null;
 
-        if (is_null($plano) || !in_array($plano, [1, 2])) {
+        if (is_null($plano)) {
             throw new ApiException("Plano Invalido", 400);
         }
 

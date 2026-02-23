@@ -131,6 +131,7 @@ class UserControl
             $this->response->userResponse($pixData);
             $duration = (int)((microtime(true) - $start) * 1000);
             $this->logSucess($this->response, 'userResponse', $service, $duration, $traceId);
+            
         } catch (\Throwable $e) {
             $statusCode = 500;
 
