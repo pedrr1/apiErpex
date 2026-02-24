@@ -64,6 +64,11 @@ class LoginUserRepository extends BaseRepository
     }
 
     public function getCodeEmail(string $email, string $code):void{
-        $this->cache->getCodeEmail($email);
+        $codeRedis = $this->cache->getCodeEmail($email);
+        if ($code !== $codeRedis)
+        {
+            throw new ApiException("Código incorreto", 401);
+        }
+        $this->cache->deleteCodeEmail($email);
     }
 }

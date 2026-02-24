@@ -33,7 +33,7 @@ class LoginUserService
     }
 
     public function getCode(string $email, string $code){
-        $this->repository->getCodeEmail($code, $email);
+        $this->repository->getCodeEmail($email, $code);
     }
 
 }

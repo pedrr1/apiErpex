@@ -19,7 +19,7 @@
             }
 
             if ($this->redis->exists($keyNome)) {
-            $duration = (int)((microtime(true) - $start) * 1000);
+                $duration = (int)((microtime(true) - $start) * 1000);
                 $this->logCache(__DIR__, __METHOD__, $duration);
                 return json_decode($this->redis->get($keyNome), true);
             }
@@ -33,7 +33,7 @@
             return null;
         }
 
-        public function cachearUsuario( array $user): void
+        public function cachearUsuario(array $user): void
         {
 
             if (!empty($user['email'])) {
@@ -51,10 +51,11 @@
             }
         }
 
-        public function setCodeEmail (string $code, string $email): void{
+        public function setCodeEmail(string $code, string $email): void
+        {
             $redisKey = 'verify:pass:recover:' . strtolower($email);
             $start = microtime(true);
-                $created = $this->redis->set(
+            $created = $this->redis->set(
                 $redisKey,
                 $code,
                 ['nx', 'ex' => 300]
@@ -72,7 +73,8 @@
             }
         }
 
-        public function getCodeEmail(string $email): void{
+        public function getCodeEmail(string $email): string
+        {
             $redisKey = 'verify:pass:recover:' . strtolower($email);
             $start = microtime(true);
             $savedCode = $this->redis->get($redisKey);
@@ -80,10 +82,24 @@
             $this->logCache(__DIR__, __METHOD__, $duration);
 
             if (!$savedCode) {
-            throw new ApiException(
-                'Código não exite ou Expirou',
-                429
-            ); // código não existe ou expirou
+                throw new ApiException(
+                    'Código não exite ou Expirou',
+                    429
+                ); // código não existe ou expirou
+
+
+            }
+            return $savedCode;
         }
+
+        public function deleteCodeEmail(string $email): void
+        {
+            $redisKey = 'verify:pass:recover:' . strtolower($email);
+
+            $start = microtime(true);
+            $this->redis->del($redisKey);
+            $duration = (int)((microtime(true) - $start) * 1000);
+
+            $this->logCache(__DIR__, __METHOD__, $duration);
         }
     }
