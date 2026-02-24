@@ -126,7 +126,7 @@ class loginUserControl
             $start = microtime(true);
             $this->service->createCode($body['EmailUser']);
             $duration = (int)((microtime(true) - $start) * 1000);
-            $this->logSucess($this->request, 'createCode', $service, $duration, $traceId);
+            $this->logSucess($this->service, 'createCode', $service, $duration, $traceId);
             
             $start = microtime(true);
             $this->response->loginResponse(['message' => "Código enviado com sucesso"]);
