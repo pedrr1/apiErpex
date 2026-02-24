@@ -25,9 +25,11 @@ class LoginUserService
     }
 
     public function createCode(string $email){
+       
+       
        $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT); 
        $this->repository->setCodeEmail($code, $email);
-       $this->email->enviarCodigo($email, $code);
+       $this->email->sendCode($email, $code, "codigo_senha");
     }
 
 }

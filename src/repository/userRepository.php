@@ -182,7 +182,7 @@ class UserRepository extends BaseRepository
         $user = $this->getInfos($idRequest);
         $idUser = $user['id'] ?? null;
         $device = $this->getDevice($idDevice);
-        $idDevice = $device['id'] ?? null;
+        $idDevice = $device['id'] ?? '';
         
         $deviceUser = $this->checkDevicesUser($idUser, $idDevice);
 

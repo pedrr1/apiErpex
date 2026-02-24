@@ -98,9 +98,69 @@ class loginUserControl
 
     public function recoverPassword(): void
     {
-        $this->request = new LoginUserRequest();
-        $headers = $this->request->getHeaders();
-        $body = $this->request->getBody();
+        try{
+            $this->request = new LoginUserRequest();
+            $traceId = bin2hex(random_bytes(16));
+
+
+            $start = microtime(true);
+            $headers = $this->request->getHeaders();
+            $service = [
+                'name' => $headers['X-Client-App'],
+                'version' => $headers['X-Version-App'] ?? null
+            ];
+
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'getHeaders', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $body = $this->request->getBody();
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'getBody', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->request->authEmail($this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'authEmail', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->service->createCode($body['EmailUser']);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'createCode', $service, $duration, $traceId);
+            
+            $start = microtime(true);
+            $this->response->loginResponse(['message' => "Código enviado com sucesso"]);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->response, 'loginResponse', $service, $duration, $traceId);
+        
+        }
+        catch (\Throwable $e){
+             $statusCode = 500;
+
+            if ($e instanceof ApiException && isset($e->statusCode)) {
+                $statusCode = $e->statusCode;
+            }
+
+            $error = [
+                'type'       => get_class($e),
+                'message'    => $e->getMessage(),
+                'stacktrace' => $e->getTraceAsString(),
+            ];
+
+            $this->logError($service ?? null, $e->getFile(), $statusCode, $traceId ?? null, $error);
+            http_response_code($statusCode);
+
+            header('Content-Type: application/json');
+
+            echo json_encode([
+                'success' => false,
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'traceId' => $traceId ?? null
+                ]
+            ]);
+            exit;
+        }
     }
 
     private function logError(?array $service = null, string $path, ?int $code = null, $traceId, array $error): void

@@ -52,7 +52,7 @@ class loginUserCache extends BaseCache
     }
 
     public function setCodeEmail (string $code, string $email): void{
-         $redisKey = 'verify:email:recover:' . strtolower($email);
+         $redisKey = 'verify:pass:recover:' . strtolower($email);
         $start = microtime(true);
             $created = $this->redis->set(
             $redisKey,
@@ -70,5 +70,9 @@ class loginUserCache extends BaseCache
                 429
             );
         }
+    }
+
+    public function getCodeEmail(string $email): array{
+
     }
 }
