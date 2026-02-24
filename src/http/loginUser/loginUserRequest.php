@@ -25,5 +25,16 @@ class LoginUserRequest extends BaseRequest{
             throw new ApiException("Email Invalido", 400);
         }
     }
+
+    public function authCode(array $env):void
+    {
+        $this->authHandleToken($env);
+        $this->authHandleApplication();
+        $email = $this->rawBody['CodeEmail'] ?? '';
+
+        if (empty($email)) {
+            throw new ApiException("Código Invalido", 400);
+        }
+    }
 }
 ?>

@@ -62,4 +62,8 @@ class LoginUserRepository extends BaseRepository
     public function setCodeEmail(string $code, string $email):void{
         $this->cache->setCodeEmail($code, $email);
     }
+
+    public function getCodeEmail(string $email, string $code):void{
+        $this->cache->getCodeEmail($email);
+    }
 }

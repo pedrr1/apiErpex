@@ -72,7 +72,18 @@
             }
         }
 
-        public function getCodeEmail(string $email): array{
+        public function getCodeEmail(string $email): void{
+            $redisKey = 'verify:pass:recover:' . strtolower($email);
+            $start = microtime(true);
+            $savedCode = $this->redis->get($redisKey);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logCache(__DIR__, __METHOD__, $duration);
 
+            if (!$savedCode) {
+            throw new ApiException(
+                'Código não exite ou Expirou',
+                429
+            ); // código não existe ou expirou
+        }
         }
     }

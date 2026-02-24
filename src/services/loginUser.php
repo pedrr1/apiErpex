@@ -32,4 +32,8 @@ class LoginUserService
        $this->email->sendCode($email, $code, "codigo_senha");
     }
 
+    public function getCode(string $email, string $code){
+        $this->repository->getCodeEmail($code, $email);
+    }
+
 }
