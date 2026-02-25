@@ -90,7 +90,7 @@ class UserRepository extends BaseRepository
     }
     
     public function deleteDeviceUser (string $id): void{
-        $stmt = $this->db->prepare("DELETE FROM dispositivos
+        $stmt = $this->db->prepare("DELETE FROM dispositivos_usuarios
         WHERE id = ?");
         $stmt->bind_param("i", $id);
         
