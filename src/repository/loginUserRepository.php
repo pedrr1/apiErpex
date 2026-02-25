@@ -72,9 +72,9 @@ class LoginUserRepository extends BaseRepository
     );
 
     // ❌ Se não atualizou ninguém
-    if ($rows === 0) {
-        throw new ApiException("Nenhum usuário foi atualizado. Verifique o email.", 404);
-    }
+    if ($stmt->errno) {
+    throw new ApiException("Erro ao atualizar senha: " . $stmt->error, 500);
+}
 }
     
 
