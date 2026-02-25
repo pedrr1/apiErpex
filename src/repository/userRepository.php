@@ -80,14 +80,33 @@ class UserRepository extends BaseRepository
             metodo: __METHOD__,
             duration: $duration,
             rows: $stmt->affected_rows,
-            action: 'INSERT',
+            action: 'SELECT',
             entidade: 'dispositivos_usuarios',
             entidadeId: null
         );
 
         $result = $stmt->get_result();
         return $result->fetch_assoc();
-    } 
+    }
+    
+    public function deleteDeviceUser (string $id): void{
+        $stmt = $this->db->prepare("DELETE FROM dispositivos
+        WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        
+        $start = microtime(true);
+        $stmt->execute();
+        $duration = microtime(true) - $start;
+        $this->logRepository(
+            endpoint: __DIR__,
+            metodo: __METHOD__,
+            duration: $duration,
+            rows: $stmt->affected_rows,
+            action: 'DELETE',
+            entidade: 'dispositivos_usuarios',
+            entidadeId: $id
+        );
+    }
 
     public function getDevicesUser (string $idUser, string $idDevice): ?array
     {
@@ -117,7 +136,7 @@ class UserRepository extends BaseRepository
             metodo: __METHOD__,
             duration: $duration,
             rows: $stmt->affected_rows,
-            action: 'INSERT',
+            action: 'SELECT',
             entidade: 'dispositivos_usuarios',
             entidadeId: null
         );

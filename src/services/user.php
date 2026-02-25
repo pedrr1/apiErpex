@@ -120,6 +120,10 @@ class UserService
        return $deviceUser;
     }
 
+    public function deleteDevice(string $idDevice)
+    {
+        $this->repository->deleteDeviceUser($idDevice);
+    }
     
     public function addSignature(string $idRequest, string $idPix, array $env): void
     {
