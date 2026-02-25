@@ -46,31 +46,36 @@ class LoginUserRepository extends BaseRepository
         return $user;
     }
 
-    public function updatePass(string $email, string $senha):void{
-        $stmt = $this->db->prepare("UPDATE usuarios
-                            SET senha_hash = ?
-                            WHERE email = ?");
+    public function updatePass(string $email, string $senha): void {
+    $stmt = $this->db->prepare("
+        UPDATE usuarios
+        SET senha_hash = ?
+        WHERE email = ?
+    ");
 
-        $stmt->bind_param("ss", $senha, $email);
-        $start = microtime(true);
+    $stmt->bind_param("ss", $senha, $email);
 
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $duration = (int)((microtime(true) - $start) * 1000);
+    $start = microtime(true);
+    $stmt->execute();
+    $duration = (int)((microtime(true) - $start) * 1000);
 
-        $this->logRepository(
-                endpoint: __DIR__,
-                metodo: __METHOD__,
-                duration: $duration,
-                rows: $result->num_rows,
-                action: 'UPDATE',
-                entidade: 'usuarios',
-            );
-        if (!$result){
-                throw new ApiException("Erro ao atualizar senha.", 404);
-        }
+    // ✅ UPDATE usa affected_rows
+    $rows = $stmt->affected_rows;
 
+    $this->logRepository(
+        endpoint: __DIR__,
+        metodo: __METHOD__,
+        duration: $duration,
+        rows: $rows,
+        action: 'UPDATE',
+        entidade: 'usuarios',
+    );
+
+    // ❌ Se não atualizou ninguém
+    if ($rows === 0) {
+        throw new ApiException("Nenhum usuário foi atualizado. Verifique o email.", 404);
     }
+}
     
 
     public function getUser(string $login):array{
