@@ -55,7 +55,7 @@ class UserRepository extends BaseRepository
     public function checkDevicesUser (string $idUser, string $idDevice): ?array
     {
          $stmt = $this->db->prepare("SELECT 
-            d.id, AS device
+            d.id, 
             d.ip,
             d.user_agent,
             d.endereco_proprio,
