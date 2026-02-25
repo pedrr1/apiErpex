@@ -26,6 +26,17 @@ class LoginUserRequest extends BaseRequest{
         }
     }
 
+    public function authPass(array $env):void
+    {
+        $this->authHandleToken($env);
+        $this->authHandleApplication();
+        $email = $this->rawBody['PassUser'] ?? '';
+
+        if (empty($email)) {
+            throw new ApiException("Senha Invalida", 400);
+        }
+    }
+
     public function authCode(array $env):void
     {
         $this->authHandleToken($env);

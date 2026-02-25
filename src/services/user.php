@@ -107,6 +107,7 @@ class UserService
     }
 
     
+    
     public function addDevicesUser(string $idRequest, string $idDevice, $name): void
     {
         $this->repository->setDevicesUser($idRequest, $idDevice, $name);

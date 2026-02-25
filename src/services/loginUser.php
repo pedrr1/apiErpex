@@ -36,4 +36,8 @@ class LoginUserService
         $this->repository->getCodeEmail($email, $code);
     }
 
+    public function updatePass(string $email, string $senha){
+        $this->repository->updatePass($email, $senha);
+    }
+
 }

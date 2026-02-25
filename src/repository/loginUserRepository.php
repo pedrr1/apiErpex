@@ -46,6 +46,33 @@ class LoginUserRepository extends BaseRepository
         return $user;
     }
 
+    public function updatePass(string $email, string $senha):void{
+        $stmt = $this->db->prepare("UPDATE usuarios
+                            SET senha_hash = ?
+                            WHERE email = ?");
+
+        $stmt->bind_param("ss", $senha, $email);
+        $start = microtime(true);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $duration = (int)((microtime(true) - $start) * 1000);
+
+        $this->logRepository(
+                endpoint: __DIR__,
+                metodo: __METHOD__,
+                duration: $duration,
+                rows: $result->num_rows,
+                action: 'UPDATE',
+                entidade: 'usuarios',
+            );
+        if (!$result){
+                throw new ApiException("Erro ao atualizar senha.", 404);
+        }
+
+    }
+    
+
     public function getUser(string $login):array{
         $user = $this->cache->loginCacheName($login);
         
