@@ -55,10 +55,11 @@ class UserRepository extends BaseRepository
     public function checkDevicesUser (string $idUser, string $idDevice): ?array
     {
          $stmt = $this->db->prepare("SELECT 
+            d.id, AS device
             d.ip,
             d.user_agent,
             d.endereco_proprio,
-            du.id,
+
             du.nome AS nome_usuario_dispositivo,  -- nome que o usuário deu pro device
             du.primeiro_acesso,
             du.ultimo_acesso
@@ -110,11 +111,11 @@ class UserRepository extends BaseRepository
     public function getDevicesUser (string $idUser, string $idDevice): ?array
     {
          $stmt = $this->db->prepare("SELECT 
-            d.id,
             d.ip,
             d.user_agent,
             d.endereco_proprio,
 
+            du.id,
             du.nome AS nome_usuario_dispositivo,  -- nome que o usuário deu pro device
             du.primeiro_acesso,
             du.ultimo_acesso
