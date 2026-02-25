@@ -89,6 +89,44 @@ class UserRepository extends BaseRepository
         return $result->fetch_assoc();
     } 
 
+    public function getDevicesUser (string $idUser, string $idDevice): ?array
+    {
+         $stmt = $this->db->prepare("SELECT 
+            d.id,
+            d.ip,
+            d.user_agent,
+            d.endereco_proprio,
+
+            du.nome AS nome_usuario_dispositivo,  -- nome que o usuário deu pro device
+            du.primeiro_acesso,
+            du.ultimo_acesso
+
+            FROM dispositivos d
+                JOIN dispositivos_usuarios du 
+                ON du.dispositivo_id = d.id
+            WHERE du.usuario_id = ?
+            AND du.dispositivo_id = ? AND du.status_dispositivo_id = 1;");
+
+        $stmt->bind_param("ii", $idUser, $idDevice);
+        $start = microtime(true);
+        $stmt->execute();
+        $duration = microtime(true) - $start;
+
+        $this->logRepository(
+            endpoint: __DIR__,
+            metodo: __METHOD__,
+            duration: $duration,
+            rows: $stmt->affected_rows,
+            action: 'INSERT',
+            entidade: 'dispositivos_usuarios',
+            entidadeId: null
+        );
+
+        $result = $stmt->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        return $rows;
+    } 
+
     public function setDevices(string $idDevice, string $deviceIP, string $adress, string $userAgent): void
     {
         $stmt = $this->db->prepare("INSERT INTO dispositivos (device_uuid, ip, endereco_proprio, user_agent) VALUES (?, ?, ?, ?)");

@@ -113,6 +113,13 @@ class UserService
         $this->repository->setDevicesUser($idRequest, $idDevice, $name);
     }
 
+    public function getDevices(string $idRequest, string $idDevice): array{
+       $user = $this->repository->setInfos($idRequest);
+       $device =  $this->repository->getDevice($idDevice);
+       $deviceUser = $this->repository->getDevicesUser($user['id'], $device['id']);
+       return $deviceUser;
+    }
+
     
     public function addSignature(string $idRequest, string $idPix, array $env): void
     {
