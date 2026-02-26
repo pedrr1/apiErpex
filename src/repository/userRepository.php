@@ -124,9 +124,9 @@ class UserRepository extends BaseRepository
                 JOIN dispositivos_usuarios du 
                 ON du.dispositivo_id = d.id
             WHERE du.usuario_id = ?
-            AND du.dispositivo_id = ? AND du.status_dispositivo_id = 1;");
+            ;");
 
-        $stmt->bind_param("ii", $idUser, $idDevice);
+        $stmt->bind_param("i", $idUser);
         $start = microtime(true);
         $stmt->execute();
         $duration = microtime(true) - $start;
