@@ -349,8 +349,61 @@ class UserRepository extends BaseRepository
         }
     }
 
+     public function addFoto(string $uidRequest): ?string
+    {
+        if (isset ($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] === UPLOAD_ERR_OK) {
+        $extensao = strtolower(pathinfo($_FILES['UserFoto']['name'], PATHINFO_EXTENSION));
+        $nomeArquivo = 'user' . $uidRequest . '.' . $extensao;
+        $pasta = __DIR__ . '/fotos/user/';
+        $caminhoFinal = $pasta . $nomeArquivo;
 
-    
+        if (!move_uploaded_file($_FILES['UserFoto']['tmp_name'], $caminhoFinal)) {
+            throw new ApiException("Falha ao salvar arquivo", 500);
+        }
+    }
+     else if(isset ($_POST['UrlFotoUser'])){
+            $url = $_POST['UrlFotoUser'];
+            $conteudo = file_get_contents($url);
+            if ($conteudo === false)        
+            { 
+                throw new ApiException("Não foi possível baixar a foto", 400); 
+            }
+            $nomeArquivo = 'user' . $uidRequest . '.' . 'jpg';
+            $pasta = __DIR__ . '/fotos/user/';
+            $caminhoFinal = $pasta . $nomeArquivo;
+            
+            if (file_put_contents($caminhoFinal, $conteudo) === false){
+                throw new ApiException("Falha ao salvar arquivo", 500);
+            }
+        }
+        return $nomeArquivo ?? null;
+    }
+
+    public function updateInfos(string $uidRequest, string $name, string $cpf, ?string $telefone = null, ?string $foto_perfil = null, ?string $google_uid = null): void{
+        $stmt =$this->db->prepare("UPDATE usuarios
+                                    SET 
+                        nome = ?,
+                        cpf = ?,
+                        telefone = ?,
+                        foto_perfil = ?,
+                        google_uid = ?
+                    WHERE uuid_request = ?;");
+        
+        $stmt->bind_param("ssssss", $name, $cpf, $telefone, $foto_perfil, $google_uid, $uidRequest);
+        $start = microtime(true);
+        $stmt->execute();
+        $duration = microtime(true) - $start;
+
+         $this->logRepository(
+            endpoint: __DIR__,
+            metodo: __METHOD__,
+            duration: $duration,
+            rows: $stmt->affected_rows,
+            action: 'UPDATE',
+            entidade: 'usuarios',
+            entidadeId: (int)$stmt->insert_id ?: null
+        );
+    }    
     public function addPlan(string $idRequest, int $idPlano): void
     {
         $user = $this->getInfos($idRequest);
@@ -372,7 +425,7 @@ class UserRepository extends BaseRepository
             metodo: __METHOD__,
             duration: $duration,
             rows: $stmt->affected_rows,
-            action: 'INSERT',
+            action: 'UPDATE',
             entidade: 'assinaturas',
             entidadeId: (int)$stmt->insert_id ?: null
         );

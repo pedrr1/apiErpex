@@ -124,6 +124,28 @@ class UserService
     {
         $this->repository->deleteDeviceUser($idDevice);
     }
+
+    public function updateUser(string $uidRequest, string $name, string $cpf, ?string $telefone = null, ?string $google_uid = null, ?string $email = null)
+    {
+        $caminho = $this->repository->addFoto($uidRequest);
+
+        if ($google_uid !== null)
+        {
+          $user =  $this->repository->getInfos($uidRequest);
+          if ($user["email"] !== $email){
+            throw new ApiException("Não possui acesso a esse email", 404);
+          }
+        }
+        $this->repository->updateInfos($uidRequest, $name, $cpf, $telefone, $caminho,$google_uid);
+    }
+
+    public function validatePass(string $uidRequest, string $hashPass){
+        $user = $this->repository->getInfos($uidRequest);
+
+        if ($user["senha_hash"] !== $hashPass){
+            throw new ApiException("Senha invalida", 401);
+        }
+    }
     
     public function addSignature(string $idRequest, string $idPix, array $env): void
     {

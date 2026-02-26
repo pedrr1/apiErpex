@@ -30,6 +30,8 @@ class BaseRequest
         return;
     }
 
+    
+
     // JSON normal
     $raw = file_get_contents("php://input");
 

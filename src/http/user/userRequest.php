@@ -36,6 +36,25 @@ class UserRequest extends BaseRequest
         }
     }
 
+    public function authAllInfo(array $env): array
+    {
+        $this->authHandleToken($env);
+        $this->authHandleApplication();
+
+        $requiredFields = [
+            'NameUser'  => 'Nome inválido',
+            'CpfUser'   => 'CPF inválido',
+        ];
+
+        foreach ($requiredFields as $field => $errorMessage) {
+            if (empty($this->rawBody[$field])) {
+                throw new ApiException($errorMessage, 400);
+            }
+        }
+
+        return $this->rawBody;
+    }
+
     public function authPlan(array $env): void
     {
         $this->authHandleToken($env);
