@@ -352,9 +352,7 @@ class UserRepository extends BaseRepository
      public function addFoto(string $uidRequest): ?string
     {
         $pasta = __DIR__ . '/fotos/user/';
-        foreach (glob($pasta . 'user' . $uidRequest . '.*') as $arquivoAntigo) {
-        @unlink($arquivoAntigo);
-    }
+        
         if (isset ($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] === UPLOAD_ERR_OK) {
         $extensao = strtolower(pathinfo($_FILES['UserFoto']['name'], PATHINFO_EXTENSION));
         $nomeArquivo = 'user' . $uidRequest . '.' . $extensao;
