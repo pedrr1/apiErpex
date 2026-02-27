@@ -382,6 +382,8 @@ class UserRepository extends BaseRepository
     }
 
     public function updateInfos(string $uidRequest, string $name, string $cpf, ?string $telefone = null, ?string $foto_perfil = null, ?string $google_uid = null): void{
+        
+        try{
         $user = $this->getInfos($uidRequest);
 
         $stmt =$this->db->prepare("UPDATE usuarios
@@ -406,9 +408,14 @@ class UserRepository extends BaseRepository
             action: 'UPDATE',
             entidade: 'usuarios',
             entidadeId: (int)$stmt->insert_id ?: null
-        );
+            );
+            }
+            catch(\Throwable $e){
+                throw new ApiException("Informções ja existentes", 500);
+            }
+        
 
-        $this->cache->delInfos($user["id"]);
+        $this->cache->delInfos($user);
     }    
     public function addPlan(string $idRequest, int $idPlano): void
     {

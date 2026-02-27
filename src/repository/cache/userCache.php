@@ -44,8 +44,8 @@ class UserCache extends BaseCache
         return null;
     }
 
-      public function delInfos(string $id):void{
-         $keyuser = "user:$id";
+      public function delInfos(array $user):void{
+         $keyuser = "user:" . $user['uuid_request'];
         $start = microtime(true);
         $this->redis->del($keyuser);
         $duration = (int)((microtime(true) - $start) * 1000);
