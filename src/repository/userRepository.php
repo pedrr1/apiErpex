@@ -349,35 +349,101 @@ class UserRepository extends BaseRepository
         }
     }
 
-     public function addFoto(string $uidRequest): ?string
-    {
-        $pasta = __DIR__ . '/fotos/user/';
-        
-        if (isset ($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] === UPLOAD_ERR_OK) {
+    public function addFoto(string $uidRequest): ?string
+{
+    $pasta = __DIR__ . '/fotos/user/';
+
+    if (!is_dir($pasta)) {
+        mkdir($pasta, 0775, true);
+    }
+
+    // 1️⃣ Upload normal (multipart/form-data)
+    if (isset($_FILES['UserFoto']) && $_FILES['UserFoto']['error'] === UPLOAD_ERR_OK) {
+
         $extensao = strtolower(pathinfo($_FILES['UserFoto']['name'], PATHINFO_EXTENSION));
+
+        // segurança básica
+        $permitidas = ['jpg', 'jpeg', 'png', 'webp'];
+        if (!in_array($extensao, $permitidas)) {
+            throw new ApiException("Formato de imagem inválido", 400);
+        }
+
         $nomeArquivo = 'user' . $uidRequest . '.' . $extensao;
         $caminhoFinal = $pasta . $nomeArquivo;
 
         if (!move_uploaded_file($_FILES['UserFoto']['tmp_name'], $caminhoFinal)) {
             throw new ApiException("Falha ao salvar arquivo", 500);
         }
+
+        return $nomeArquivo;
     }
-     else if(isset ($_POST['UrlFotoUser'])){
-            $url = $_POST['UrlFotoUser'];
-            $conteudo = file_get_contents($url);
-            if ($conteudo === false)        
-            { 
-                throw new ApiException("Não foi possível baixar a foto", 400); 
+
+    // 2️⃣ URL da imagem
+    else if (isset($_POST['UrlFotoUser']) && !empty($_POST['UrlFotoUser'])) {
+
+        $url = trim($_POST['UrlFotoUser']);
+
+        // Se a URL for do próprio servidor, converte pra path físico (evita erro de loopback/SSL)
+        if (isset($_SERVER['HTTP_HOST']) && str_contains($url, $_SERVER['HTTP_HOST'])) {
+
+            $path = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
+
+            if (!file_exists($path)) {
+                throw new ApiException("Arquivo local não encontrado no servidor", 400);
             }
-            $nomeArquivo = 'user' . $uidRequest . '.' . 'jpg';
-            $caminhoFinal = $pasta . $nomeArquivo;
-            
-            if (file_put_contents($caminhoFinal, $conteudo) === false){
-                throw new ApiException("Falha ao salvar arquivo", 500);
-            }
+
+            $conteudo = file_get_contents($path);
+        } 
+        // Se for URL externa, usa CURL (mais confiável que file_get_contents)
+        else {
+            $conteudo = $this->baixarImagemCurl($url);
         }
-        return $nomeArquivo ?? null;
+
+        if (!$conteudo) {
+            throw new ApiException("Não foi possível baixar a foto", 400);
+        }
+
+        $nomeArquivo = 'user' . $uidRequest . '.jpg';
+        $caminhoFinal = $pasta . $nomeArquivo;
+
+        if (file_put_contents($caminhoFinal, $conteudo) === false) {
+            throw new ApiException("Falha ao salvar arquivo", 500);
+        }
+
+        return $nomeArquivo;
     }
+
+    return null;
+}
+
+private function baixarImagemCurl(string $url): string
+{
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_SSL_VERIFYPEER => false, // ok em dev/localhost
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_TIMEOUT => 20,
+    ]);
+
+    $conteudo = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        $erro = curl_error($ch);
+        curl_close($ch);
+        throw new ApiException("Erro ao baixar imagem: $erro", 400);
+    }
+
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode !== 200 || !$conteudo) {
+        throw new ApiException("Erro ao baixar imagem (HTTP $httpCode)", 400);
+    }
+
+    return $conteudo;
+}
 
     public function updateInfos(string $uidRequest, string $name, string $cpf, ?string $telefone = null, ?string $foto_perfil = null, ?string $google_uid = null): void{
         
