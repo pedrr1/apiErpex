@@ -27,6 +27,8 @@ class UserCache extends BaseCache
         $this->logCache(__DIR__, __METHOD__, $duration);
     }
 
+ 
+
     public function getDevices(string $idDevice): ?array
     {
         $keyDevice = "device:$idDevice";
@@ -40,6 +42,15 @@ class UserCache extends BaseCache
         }
         
         return null;
+    }
+
+      public function delInfos(string $id):void{
+         $keyuser = "user:$id";
+        $start = microtime(true);
+        $this->redis->del($keyuser);
+        $duration = (int)((microtime(true) - $start) * 1000);
+
+        $this->logCache(__DIR__, __METHOD__, $duration);
     }
 
         public function setDevices(array $deviceData): void

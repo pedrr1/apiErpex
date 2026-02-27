@@ -380,6 +380,8 @@ class UserRepository extends BaseRepository
     }
 
     public function updateInfos(string $uidRequest, string $name, string $cpf, ?string $telefone = null, ?string $foto_perfil = null, ?string $google_uid = null): void{
+        $user = $this->getInfos($uidRequest);
+
         $stmt =$this->db->prepare("UPDATE usuarios
                                     SET 
                         nome = ?,
@@ -403,6 +405,8 @@ class UserRepository extends BaseRepository
             entidade: 'usuarios',
             entidadeId: (int)$stmt->insert_id ?: null
         );
+
+        $this->cache->delInfos($user["id"]);
     }    
     public function addPlan(string $idRequest, int $idPlano): void
     {
