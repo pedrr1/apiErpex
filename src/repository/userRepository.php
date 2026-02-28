@@ -297,6 +297,34 @@ class UserRepository extends BaseRepository
         throw new ApiException("Usuário não encontrado", 404);
     }
 
+    public function deleteUser(string $idRequest):void
+    {
+        try{
+            $user = $this->getInfos($idRequest);
+
+        $stmt = $this->db->prepare("DELETE FROM usuarios WHERE uuid_request = ?;");
+        $stmt->bind_param("s", $idRequest);
+        $start = microtime(true);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $duration = microtime(true) - $start;
+
+        $this->logRepository(
+            endpoint: __DIR__,
+            metodo: __METHOD__,
+            duration: $duration,
+            rows: $result->num_rows,
+            action: 'DELETE',
+            entidade: 'usuarios',
+            entidadeId: $idRequest
+        );
+        $this->cache->delInfos($user);
+    }
+    catch(\Throwable $e){
+        throw new ApiException("Usuário não encontrado", 404);
+    }
+    }
+
 
     public function checkDevices(string $idRequest): void
     {

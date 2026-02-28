@@ -771,6 +771,142 @@ class UserControl
         }
     }
 
+     public function addSignature(): void
+    {
+        try {
+            $this->request = new UserRequest();
+            $traceId = bin2hex(random_bytes(16));
+
+            $start = microtime(true);
+            $headers = $this->request->getHeaders();
+            $service = [
+                'name' => $headers['X-Client-App'],
+                'version' => $headers['X-Version-App'] ?? null
+            ];
+
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'getHeaders', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $body = $this->request->getBody();
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'getBody', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->request->authPix($this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'authPix', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->request->authUser($this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'authUser', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->service->addSignature($body['IdRequest'], $body['PixId'], $this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->service, 'addSignature', $service, $duration, $traceId);
+
+                $start = microtime(true);            
+            $this->response->userResponse(['message' => 'Assinatura adicionada com sucesso']);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->response, 'userResponse', $service, $duration, $traceId);
+
+        } catch (\Throwable $e) {
+            $statusCode = 500;
+
+            if ($e instanceof ApiException && isset($e->statusCode)) {
+                $statusCode = $e->statusCode;
+            }
+
+            $error = [
+                'type'       => get_class($e),
+                'message'    => $e->getMessage(),
+                'stacktrace' => $e->getTraceAsString(),
+            ];
+
+            $this->logError($service ?? null, $e->getFile(), $statusCode, $traceId ?? null, $error);
+            http_response_code($statusCode);
+
+            header('Content-Type: application/json');
+
+            echo json_encode([
+                'success' => false,
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'traceId' => $traceId ?? null
+                ]
+            ]);
+            exit;
+        }
+    }
+
+     public function deleteUser(): void
+    {
+        try {
+            $this->request = new UserRequest();
+            $traceId = bin2hex(random_bytes(16));
+
+            $start = microtime(true);
+            $headers = $this->request->getHeaders();
+            $service = [
+                'name' => $headers['X-Client-App'],
+                'version' => $headers['X-Version-App'] ?? null
+            ];
+
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'getHeaders', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $body = $this->request->getBody();
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'getBody', $service, $duration, $traceId);
+
+
+            $start = microtime(true);
+            $this->request->authUser($this->env);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->request, 'authUser', $service, $duration, $traceId);
+
+            $start = microtime(true);
+            $this->service->deleteUser($body['IdRequest']);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->service, 'deleteUser', $service, $duration, $traceId);
+
+                $start = microtime(true);            
+            $this->response->userResponse(['message' => 'Usuario deletado com sucesso']);
+            $duration = (int)((microtime(true) - $start) * 1000);
+            $this->logSucess($this->response, 'userResponse', $service, $duration, $traceId);
+
+        } catch (\Throwable $e) {
+            $statusCode = 500;
+
+            if ($e instanceof ApiException && isset($e->statusCode)) {
+                $statusCode = $e->statusCode;
+            }
+
+            $error = [
+                'type'       => get_class($e),
+                'message'    => $e->getMessage(),
+                'stacktrace' => $e->getTraceAsString(),
+            ];
+
+            $this->logError($service ?? null, $e->getFile(), $statusCode, $traceId ?? null, $error);
+            http_response_code($statusCode);
+
+            header('Content-Type: application/json');
+
+            echo json_encode([
+                'success' => false,
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'traceId' => $traceId ?? null
+                ]
+            ]);
+            exit;
+        }
+    }
+
     private function logError(?array $service = null, string $path, ?int $code = null, $traceId, array $error): void
     {
         $log = Log::logApp(

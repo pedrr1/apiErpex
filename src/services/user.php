@@ -146,6 +146,10 @@ class UserService
             throw new ApiException("Senha invalida", 401);
         }
     }
+
+    public function deleteUser(string $uidRequest){
+        $this->repository->deleteUser($uidRequest);
+    }
     
     public function addSignature(string $idRequest, string $idPix, array $env): void
     {
