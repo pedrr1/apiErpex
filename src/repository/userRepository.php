@@ -267,7 +267,7 @@ class UserRepository extends BaseRepository
     public function setInfos(string $idRequest): array
     {
         $stmt = $this->db->prepare("
-            SELECT id, uuid_request, nome, email, telefone, cpf, foto_perfil, google_uid
+            SELECT id, uuid_request, nome, email, telefone, cpf, foto_perfil, google_uid, senha_hash
             FROM usuarios
             WHERE uuid_request = ? AND status_id != 3
             LIMIT 1
