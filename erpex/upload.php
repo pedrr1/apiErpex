@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 $diretorio = __DIR__ . "/fotos/produtos/";
 
 // URL pública (ajuste para seu domínio)
-$baseUrl = "https://sophia-me13.site/erpex/fotos/produtos/";
+$baseUrl = "https://api.sophia-me13.site/erpex/fotos/produtos/";
 
 // Garante pasta
 if (!is_dir($diretorio)) {
